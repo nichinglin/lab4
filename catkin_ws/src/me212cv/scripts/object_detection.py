@@ -42,8 +42,8 @@ cx = msg.P[2]
 cy = msg.P[6]
 
 def main():
-    useHSV   = False
-    useDepth = False
+    useHSV   = True
+    useDepth = True
     if not useHSV:
         # Task 1
         # subscribe to image
@@ -57,8 +57,9 @@ def main():
             # Task 3: Use Kinect depth data
             #    Subscribe to both RGB and Depth images with a Synchronizer
             image_sub = message_filters.Subscriber("/camera/rgb/image_rect_color", Image)
-            #depth_sub = message_filters.Subscriber("/camera/depth_registered/image_raw", Image)    #Asus Xtion
-            depth_sub = message_filters.Subscriber("/camera/depth_registered/sw_registered/image_rect", Image)  #/camera/depth_registered/sw_registered/image_rect #Realsense
+            # depth_sub = message_filters.Subscriber("/camera/depth_registered/image_raw", Image)    #Asus Xtion
+            depth_sub = message_filters.Subscriber("/camera/depth/image", Image)
+            # depth_sub = message_filters.Subscriber("/camera/depth_registered/sw_registered/image_rect", Image)  #/camera/depth_registered/sw_registered/image_rect #Realsense
             ts = message_filters.ApproximateTimeSynchronizer([image_sub, depth_sub], 10, 0.5)
             ts.registerCallback(rosRGBDCallBack)
 
@@ -189,6 +190,15 @@ def getXYZ(xp, yp, zc, fx,fy,cx,cy):
     # x = ??
     # y = ??
     # z = ??
+    xc = (xp - cx)*zc/fx
+    yc = (yp - cy)*zc/fy
+    x = xc
+    y = yc
+    z = zc
+    x = zc
+    y = -xc
+    z = -yc
+
     return (x,y,z)
 
 
